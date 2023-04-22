@@ -5,10 +5,14 @@ public class EvaluadorProteccion {
 
 
     //Atributos
-	
+    String algHash;
+	String cadenaCodigo;
+    String sal;
+    String numThreads;
 
+    
     //Métodos
-    public void imprimirTitulo ( ) 
+    private void imprimirTitulo ( ) 
     {
         System.out.println ( "==================================================" );
         System.out.println ( "ISIS 2203 - Infraestructura Computacional - 202310" );
@@ -16,6 +20,7 @@ public class EvaluadorProteccion {
         System.out.println ( "---- s.forerog2 - código 2 - código 3 -----" );
         System.out.println ( "==================================================" );
     }
+
 
 
     public static void main(String[] args) throws Exception 
@@ -32,6 +37,20 @@ public class EvaluadorProteccion {
 		String sal = sc.nextLine();
         System.out.println( "\nPor favor ingrese el número de threads que implementará (1 o 2): ");
 		String numThreads = sc.nextLine();
+
+        if (numThreads.equals("1"))
+        {
+            HiloDescifrador hilo = new HiloDescifrador(1, algHash, cadenaCodigo, sal); 
+            hilo.start();
+        }
+        else if (numThreads.equals("2"))
+        {
+            HiloDescifrador hilo1 = new HiloDescifrador(2, algHash, cadenaCodigo, sal);
+            HiloDescifrador hilo2 = new HiloDescifrador(3, algHash, cadenaCodigo, sal);
+            hilo1.start();
+            hilo2.start();
+        }
+        
 
 
 
