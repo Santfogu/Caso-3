@@ -61,8 +61,7 @@ public class EvaluadorProteccion {
                     hilo1.join();
                     hilo2.join();
                 }
-                //Escibir resultados por ciclo
-
+                //Escibir resultados por ciclo  
 
             }
         } catch (IOException | InterruptedException e) {

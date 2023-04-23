@@ -26,6 +26,7 @@ public class HiloDescifrador extends Thread
 	
 	public void run() 
 	{
+		long startTime = System.currentTimeMillis();
 		System.out.println("Comenzó");
 		crearEspacio("abcdefghijklmnopqrstuvwxyz");
 		long iterador = 0;
@@ -67,7 +68,11 @@ public class HiloDescifrador extends Thread
 			
 		}
 
-		
+
+		long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+
+		System.out.println(duration);
 		System.out.println("Terminó");
 	}
 
