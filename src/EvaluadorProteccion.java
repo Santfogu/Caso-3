@@ -3,7 +3,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.CyclicBarrier;
 
 public class EvaluadorProteccion {
 
@@ -14,7 +16,7 @@ public class EvaluadorProteccion {
 	String cadenaCodigo;
     String sal;
     String numThreads;
-
+	public static ArrayList<String> espacio; 
     
     //Métodos
     private void imprimirTitulo ( ) 
@@ -37,30 +39,84 @@ public class EvaluadorProteccion {
         //(T) número de threads que implementará
 
         String resultados = "";
+        int numeroPrueba = 0;
+        
 
         try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
             String linea;
             while ((linea = br.readLine()) != null) {
+                
                 String[] campos = linea.split(",");
-                algHash = campos[0];
-                cadenaCodigo = campos[1];
-                sal = campos[2];
-                numThreads = campos[3];
+                algHash = campos[0].trim();
+                cadenaCodigo = campos[1].trim();
+                sal = campos[2].trim();
+                numThreads = campos[3].trim();
+                
+                numeroPrueba ++;
+                String tiempoRespuestaThread = "";
+                String password = "";
+
+
                 if (numThreads.equals("1"))
                 {
-                    HiloDescifrador hilo = new HiloDescifrador(1, algHash, cadenaCodigo, sal); 
+                    HiloDescifrador hilo = new HiloDescifrador(1, algHash, cadenaCodigo, sal, espacio); 
                     hilo.start();
                     hilo.join();
+
+                    if (hilo.encontro()){
+                        tiempoRespuestaThread = hilo.darTiempoRespuesta();
+                        password = hilo.darPassword();
+                    }
+
+
                 }
                 else if (numThreads.equals("2"))
                 {
-                    HiloDescifrador hilo1 = new HiloDescifrador(2, algHash, cadenaCodigo, sal);
-                    HiloDescifrador hilo2 = new HiloDescifrador(3, algHash, cadenaCodigo, sal);
+                    HiloDescifrador hilo1 = new HiloDescifrador(2, algHash, cadenaCodigo, sal, espacio);
+                    HiloDescifrador hilo2 = new HiloDescifrador(3, algHash, cadenaCodigo, sal, espacio);
                     hilo1.start();
                     hilo2.start();
                     hilo1.join();
                     hilo2.join();
+
+                    if (hilo1.encontro()){
+                        tiempoRespuestaThread = hilo1.darTiempoRespuesta();
+                        password = hilo1.darPassword();
+                    }
+                    else if (hilo2.encontro()){
+                        tiempoRespuestaThread = hilo2.darTiempoRespuesta();
+                        password = hilo2.darPassword();
+                    }
+
                 }
+
+                HiloDescifrador.reiniciarEncontrado();
+
+
+
+                System.out.println("\n-------------------------------------");
+                System.out.println("Terminó prueba numero " + numeroPrueba);
+                System.out.println("-------------------------------------\n");
+
+                
+                if (tiempoRespuestaThread != ""){
+                    System.out.println("Tiempo de respuesta: " + tiempoRespuestaThread);
+                }
+                System.out.println("\n");
+
+                System.out.println ("Algoritmo de hash: " + algHash );
+                System.out.println ("Codigo hash: " + cadenaCodigo );
+                System.out.println ("Sal: " + sal );
+                System.out.println("Numero Threads: " + numThreads + "\n");
+                System.out.println("Contraseña Encontrada: " + password);
+
+                
+                System.out.println("\n");
+
+
+
+                
+
                 //Escibir resultados por ciclo  
 
             }
@@ -99,10 +155,15 @@ public class EvaluadorProteccion {
 
     public static void main(String[] args) throws Exception 
     {
+
+        espacio = new ArrayList<String>();
+        crearEspacio("abcdefghijklmnopqrstuvwxyz");
+
+
         EvaluadorProteccion evaluador = new EvaluadorProteccion();
 		evaluador.imprimirTitulo();
 		Scanner sc = new Scanner ( System.in );
-        System.out.println( "\nPor favor ingrese 1 para ingresaar datos por consola y 2 para correr archivo de prueba:");
+        System.out.println( "\nPor favor ingrese 1 para ingresar datos por consola y 2 para correr archivo de prueba:");
 		String modo = sc.nextLine();
         if (modo.equals("1"))
         {
@@ -114,22 +175,69 @@ public class EvaluadorProteccion {
             String sal = sc.nextLine();
             System.out.println( "\nPor favor ingrese el número de threads que implementará (1 o 2): ");
             String numThreads = sc.nextLine();
+            
+            String tiempoRespuestaThread = "";
+            String password = "";
+
 
             if (numThreads.equals("1"))
             {
-                HiloDescifrador hilo = new HiloDescifrador(1, algHash, cadenaCodigo, sal); 
+                HiloDescifrador hilo = new HiloDescifrador(1, algHash, cadenaCodigo, sal, espacio); 
                 hilo.start();
                 hilo.join();
+
+                if (hilo.encontro()){
+                    tiempoRespuestaThread = hilo.darTiempoRespuesta();
+                    password = hilo.darPassword();
+                }
+
+
             }
             else if (numThreads.equals("2"))
             {
-                HiloDescifrador hilo1 = new HiloDescifrador(2, algHash, cadenaCodigo, sal);
-                HiloDescifrador hilo2 = new HiloDescifrador(3, algHash, cadenaCodigo, sal);
+                HiloDescifrador hilo1 = new HiloDescifrador(2, algHash, cadenaCodigo, sal, espacio);
+                HiloDescifrador hilo2 = new HiloDescifrador(3, algHash, cadenaCodigo, sal, espacio);
                 hilo1.start();
                 hilo2.start();
                 hilo1.join();
                 hilo2.join();
+
+                if (hilo1.encontro()){
+                    tiempoRespuestaThread = hilo1.darTiempoRespuesta();
+                    password = hilo1.darPassword();
+                }
+                else if (hilo2.encontro()){
+                    tiempoRespuestaThread = hilo2.darTiempoRespuesta();
+                    password = hilo2.darPassword();
+                }
+
             }
+
+            HiloDescifrador.reiniciarEncontrado();
+
+
+
+            System.out.println("\n-------------------------------------");
+            System.out.println("Prueba Terminada");
+            System.out.println("-------------------------------------\n");
+
+            
+            if (tiempoRespuestaThread != ""){
+                System.out.println("Tiempo de respuesta: " + tiempoRespuestaThread);
+            }
+            System.out.println("\n");
+
+            System.out.println ("Algoritmo de hash: " + algHash );
+            System.out.println ("Codigo hash: " + cadenaCodigo );
+            System.out.println ("Sal: " + sal );
+            System.out.println("Numero Threads: " + numThreads + "\n");
+            System.out.println("Contraseña Encontrada: " + password);
+
+            
+            System.out.println("\n");
+
+
+
         }
         else if (modo.equals("2"))
         {
@@ -138,4 +246,14 @@ public class EvaluadorProteccion {
         }
 
     }
+
+    public static void crearEspacio(String cadena)
+	{
+		espacio.add("");
+		for (int i = 0; i < cadena.length(); i++) 
+		{
+			char c = cadena.charAt(i);
+			espacio.add(""+c);
+		}
+	}
 }
