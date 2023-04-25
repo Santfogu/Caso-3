@@ -124,12 +124,12 @@ public class EvaluadorProteccion {
 
 
                 //Escibir resultados por ciclo  
-                fr.write("T: " + tiempoRespuestaThread + 
-                        " V: " + password +
+                fr.write("V: " + password +
+                        " T: " + tiempoRespuestaThread + 
                         " H: " + algHash +
                         " S: " + sal +
                         " NumT: " + numThreads + "\n");
-
+                fr.flush();
             }
         } catch (IOException | InterruptedException e) {
             System.err.println("Error al leer el archivo: " + e.getMessage());
