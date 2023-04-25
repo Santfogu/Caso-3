@@ -41,6 +41,15 @@ public class EvaluadorProteccion {
         String resultados = "";
         int numeroPrueba = 0;
         
+        File file = new File("Resultados.txt");
+		FileWriter fr = null;
+        try {
+			fr = new FileWriter(file);
+		} 
+		catch (IOException e) {
+			System.out.println("Ocurrió un error al crear el archivo.");
+			e.printStackTrace();
+		}
 
         try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
             String linea;
@@ -114,33 +123,19 @@ public class EvaluadorProteccion {
                 System.out.println("\n");
 
 
-
-                
-
                 //Escibir resultados por ciclo  
+                fr.write("T: " + tiempoRespuestaThread + 
+                        " V: " + password +
+                        " H: " + algHash +
+                        " S: " + sal +
+                        " NumT: " + numThreads + "\n");
 
             }
         } catch (IOException | InterruptedException e) {
             System.err.println("Error al leer el archivo: " + e.getMessage());
         }
 
-        escribirArchivo("Resultados.txt", resultados);
-
-    }
-
-    private File escribirArchivo(String nombre, String data)
-	{
-		File file = new File(nombre);
-		FileWriter fr = null;
-		try {
-			fr = new FileWriter(file);
-			fr.write(data);
-		} 
-		catch (IOException e) {
-			System.out.println("Ocurrió un error al crear el archivo.");
-			e.printStackTrace();
-		}
-		finally{
+        finally{
 			try {
 				fr.close();
 			} 
@@ -149,8 +144,9 @@ public class EvaluadorProteccion {
 				e.printStackTrace();
 			}
 		}
-		return file;
-	}
+
+    }
+    
 	
 
     public static void main(String[] args) throws Exception 

@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "EvaluadorProteccion",
+            "request": "launch",
+            "mainClass": "EvaluadorProteccion",
+            "projectName": "Caso 3_f9b78bf0"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
