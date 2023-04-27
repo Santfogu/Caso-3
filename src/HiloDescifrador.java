@@ -1,8 +1,5 @@
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import javax.sql.rowset.spi.SyncResolver;
 
 public class HiloDescifrador extends Thread {
 
@@ -11,7 +8,7 @@ public class HiloDescifrador extends Thread {
   private String algHash;
   private String cadenaCodigo;
   private String sal;
-  private ArrayList<String> espacio = new ArrayList<String>();
+  private char[] espacio;
   public static Boolean encontrado = false;
   public String password;
   public String tiempoRespuesta;
@@ -22,7 +19,7 @@ public class HiloDescifrador extends Thread {
     String algHash,
     String cadenaCodigo,
     String sal,
-    ArrayList<String> espacio
+    char[] espacio
   ) {
     this.modo = modo;
     this.algHash = algHash;
@@ -52,41 +49,35 @@ public class HiloDescifrador extends Thread {
       indexInicio = 10460353203L / 2;
     }
 
-    while (indexInicio <= indexFinal && !(encontrado)) {
-      int pos1 = (int) (indexInicio / (27 * 27 * 27 * 27 * 27 * 27)) % 27;
-      int pos2 = (int) (indexInicio / (27 * 27 * 27 * 27 * 27)) % 27;
-      int pos3 = (int) (indexInicio / (27 * 27 * 27 * 27)) % 27;
-      int pos4 = (int) (indexInicio / (27 * 27 * 27)) % 27;
-      int pos5 = (int) (indexInicio / (27 * 27)) % 27;
-      int pos6 = (int) (indexInicio / 27) % 27;
-      int pos7 = (int) (indexInicio % 27);
+    
+    StringBuilder sb;
+    int indice;
+    int[] indices = {387420489, 14348907, 531441, 19683, 729, 27, 1};
 
-      V =
-        espacio.get(pos1) +
-        espacio.get(pos2) +
-        espacio.get(pos3) +
-        espacio.get(pos4) +
-        espacio.get(pos5) +
-        espacio.get(pos6) +
-        espacio.get(pos7);
 
-	  
-      if (cadenaCodigo.equals(convertirHash(V + sal))) {
+    while (indexInicio <= indexFinal && !(encontrado)) 
+    {
+      sb = new StringBuilder();
 
-        encontrado = true;
-		threadGanador = true;
-		password = V ;
-		long endTime = System.currentTimeMillis();
-		long duration = endTime - startTime;
-		this.tiempoRespuesta = duration + " ms";
-
+      for (int i = 0; i < 7; i++) {
+        indice = (int) (indexInicio/indices[i]) % 27;
+        if (espacio[indice] != '\0') {
+          sb.append(espacio[indice]);
+        }
       }
+      V = sb.toString();
 
-      indexInicio+=1;
-
-	  if (encontrado){
-		  indexFinal = -1;
-	  }
+      if (cadenaCodigo.equals(convertirHash(V + sal))) 
+      {
+        encontrado = true;
+        threadGanador = true;
+        password = V ;
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        this.tiempoRespuesta = duration + " ms";
+      }
+      indexInicio++;
+      
     }
 
   }
