@@ -71,7 +71,7 @@ public class HiloDescifrador extends Thread {
       sb = new StringBuilder();
 
       for (int i = 0; i < 7; i++) {
-        indice = (int) (indexInicio/indices[i]) % 27;
+        indice = (int) ((indexInicio/indices[i]) % 27);
         if (espacio[indice] != '\0') {
           sb.append(espacio[indice]);
         }
