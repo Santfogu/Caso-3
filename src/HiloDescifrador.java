@@ -1,8 +1,6 @@
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import javax.sql.rowset.spi.SyncResolver;
+import java.util.Arrays;
 
 public class HiloDescifrador extends Thread {
 
@@ -11,7 +9,7 @@ public class HiloDescifrador extends Thread {
   private String algHash;
   private String cadenaCodigo;
   private String sal;
-  private ArrayList<String> espacio = new ArrayList<String>();
+  private char[] espacio;
   public static Boolean encontrado = false;
   public String password;
   public String tiempoRespuesta;
@@ -22,7 +20,7 @@ public class HiloDescifrador extends Thread {
     String algHash,
     String cadenaCodigo,
     String sal,
-    ArrayList<String> espacio
+    char[] espacio
   ) {
     this.modo = modo;
     this.algHash = algHash;
@@ -44,71 +42,69 @@ public class HiloDescifrador extends Thread {
 	// Por defecto en modo 1
     long indexInicio = 0;
     long indexFinal = 10460353203L;
+    int aumento = 1;
 
-    if (modo == 2) {
-      indexFinal = 10460353203L / 2;
+    if (modo == 2) 
+    {
+      aumento = 2;
     }
-    if (modo == 3) {
-      indexInicio = 10460353203L / 2;
+    if (modo == 3) 
+    {
+      aumento = 2;
+      indexInicio = 1;
     }
 
-    while (indexInicio <= indexFinal && !(encontrado)) {
-      int pos1 = (int) (indexInicio / (27 * 27 * 27 * 27 * 27 * 27)) % 27;
-      int pos2 = (int) (indexInicio / (27 * 27 * 27 * 27 * 27)) % 27;
-      int pos3 = (int) (indexInicio / (27 * 27 * 27 * 27)) % 27;
-      int pos4 = (int) (indexInicio / (27 * 27 * 27)) % 27;
-      int pos5 = (int) (indexInicio / (27 * 27)) % 27;
-      int pos6 = (int) (indexInicio / 27) % 27;
-      int pos7 = (int) (indexInicio % 27);
 
-      V =
-        espacio.get(pos1) +
-        espacio.get(pos2) +
-        espacio.get(pos3) +
-        espacio.get(pos4) +
-        espacio.get(pos5) +
-        espacio.get(pos6) +
-        espacio.get(pos7);
-
-	  
-      if (cadenaCodigo.equals(convertirHash(V + sal))) {
-
-        encontrado = true;
-		threadGanador = true;
-		password = V ;
-		long endTime = System.currentTimeMillis();
-		long duration = endTime - startTime;
-		this.tiempoRespuesta = duration + " ms";
-
+    StringBuilder sb;
+    int indice;
+    int[] indices = {387420489, 14348907, 531441, 19683, 729, 27, 1};
+    
+    int len = cadenaCodigo.length();
+    byte[] byteAct = new byte[len / 2];
+    for (int i = 0; i < len; i += 2) {
+        byteAct[i / 2] = (byte) ((Character.digit(cadenaCodigo.charAt(i), 16) << 4)
+                              + Character.digit(cadenaCodigo.charAt(i+1), 16)); 
       }
 
-      indexInicio+=1;
+    while (indexInicio <= indexFinal && !(encontrado)) 
+    {
+      sb = new StringBuilder();
 
-	  if (encontrado){
-		  indexFinal = -1;
-	  }
+      for (int i = 0; i < 7; i++) {
+        indice = (int) ((indexInicio/indices[i]) % 27);
+        if (espacio[indice] != '\0') {
+          sb.append(espacio[indice]);
+        }
+      }
+      V = sb.toString();
+
+      if (Arrays.equals(convertirHash(V+sal),byteAct))
+      {
+        encontrado = true;
+        threadGanador = true;
+        password = V ;
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        this.tiempoRespuesta = duration + " ms";
+      }
+      indexInicio += aumento;
+      
     }
 
   }
 
-  private String convertirHash(String cadena) {
-    String hashStr = "";
+  private byte[] convertirHash(String cadena) {
+    byte[] hashBytes = {};
     try {
       // Aplicar Hash a los bytes
       MessageDigest digest;
       digest = MessageDigest.getInstance(algHash);
-      byte[] hashBytes = digest.digest(cadena.getBytes());
+      hashBytes = digest.digest(cadena.getBytes());
 
-      // Convertir el valor hash a una cadena hexadecimal
-      StringBuilder sb = new StringBuilder();
-      for (byte b : hashBytes) {
-        sb.append(String.format("%02x", b));
-      }
-      hashStr = sb.toString();
     } catch (NoSuchAlgorithmException e) {
       e.printStackTrace();
     }
-    return hashStr;
+    return hashBytes;
   }
 
   public String darTiempoRespuesta(){

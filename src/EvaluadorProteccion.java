@@ -3,9 +3,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.concurrent.CyclicBarrier;
 
 public class EvaluadorProteccion {
 
@@ -16,7 +14,7 @@ public class EvaluadorProteccion {
 	String cadenaCodigo;
     String sal;
     String numThreads;
-	public static ArrayList<String> espacio; 
+    public static char[] espacio;
     
     //Métodos
     private void imprimirTitulo ( ) 
@@ -38,9 +36,8 @@ public class EvaluadorProteccion {
         //(S) una secuencia de 2 caracteres que representa la sal
         //(T) número de threads que implementará
 
-        String resultados = "";
-        int numeroPrueba = 0;
-        
+        int numeroPrueba = 0;    
+
         File file = new File("Resultados.txt");
 		FileWriter fr = null;
         try {
@@ -152,8 +149,12 @@ public class EvaluadorProteccion {
     public static void main(String[] args) throws Exception 
     {
 
-        espacio = new ArrayList<String>();
-        crearEspacio("abcdefghijklmnopqrstuvwxyz");
+        espacio = new char[27];
+        espacio[0] = '\0';  // cadena vacía
+        for (int i = 1; i <= 26; i++) {
+            espacio[i] = (char) (i + 96);  // caracteres de 'a' a 'z'
+        }
+        
 
 
         EvaluadorProteccion evaluador = new EvaluadorProteccion();
@@ -243,13 +244,5 @@ public class EvaluadorProteccion {
 
     }
 
-    public static void crearEspacio(String cadena)
-	{
-		espacio.add("");
-		for (int i = 0; i < cadena.length(); i++) 
-		{
-			char c = cadena.charAt(i);
-			espacio.add(""+c);
-		}
-	}
+   
 }
