@@ -24,7 +24,7 @@ public class EvaluadorProteccion {
         System.out.println ( "==================================================" );
         System.out.println ( "ISIS 2203 - Infraestructura Computacional - 202310" );
         System.out.println ( "--------------- Caso 3 - Seguridad ---------------" );
-        System.out.println ( "---- s.forerog2 - jo.cabanzo - código 3 -----" );
+        System.out.println ( "---- s.forerog2 - jo.cabanzo - s.tenjov -----" );
         System.out.println ( "==================================================" );
     }
 
